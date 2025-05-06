@@ -36,7 +36,7 @@ public class Material {
 	private String valor;
 	
 	@Column(name = "n_id_orden_trabajo")
-	private OrdenTrabajo idOrdenTrabajo;
+	private Integer idOrdenTrabajo;
 	
 	/*
 	@ManyToOne

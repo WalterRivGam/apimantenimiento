@@ -1,6 +1,7 @@
 package pe.edu.uni.apiordentrabajo.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -94,7 +95,7 @@ public class OrdenTrabajo {
 	private String usuarioRegistro;
 
 	@Column(name = "d_fecha_registro")
-	private LocalDate fechaRegistro;
+	private LocalDateTime fechaRegistro;
 
 	@Column(name = "v_ip_actualizacion")
 	private String ipActualizacion;
@@ -103,7 +104,7 @@ public class OrdenTrabajo {
 	private String usuarioActualizacion;
 
 	@Column(name = "d_fecha_actualizacion")
-	private LocalDate fechaActualizacion;
+	private LocalDateTime fechaActualizacion;
 
 	@Column(name = "n_flag_registro_eliminado")
 	private Boolean flagRegistroEliminado;

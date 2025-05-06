@@ -1,7 +1,10 @@
 package pe.edu.uni.apiordentrabajo.dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,10 +34,10 @@ public class OrdenTrabajoDTO {
 	private String observaciones;
 	private String ipRegistro;
 	private String usuarioRegistro;
-	private LocalDate fechaRegistro;
+	private LocalDateTime fechaRegistro;
 	private String ipActualizacion;
 	private String usuarioActualizacion;
-	private LocalDate fechaActualizacion;
+	private LocalDateTime fechaActualizacion;
 	private Boolean flagRegistroEliminado;
 	private Integer idSolicitud;
 	private List<MaterialDTO> materiales;
