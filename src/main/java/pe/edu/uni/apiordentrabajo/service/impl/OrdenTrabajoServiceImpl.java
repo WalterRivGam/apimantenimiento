@@ -1,6 +1,5 @@
 package pe.edu.uni.apiordentrabajo.service.impl;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -196,5 +195,38 @@ public class OrdenTrabajoServiceImpl implements OrdenTrabajoService {
 		if(ordenTrabajo.getIdSolicitud() == null) {
 			ordenTrabajo.setIdSolicitud(ordenTrabajoActual.getIdSolicitud());
 		}
+	}
+
+	@Override
+	public Optional<OrdenTrabajoDTO> obtenerOrden(Integer idOrdenTrabajo) {
+		Optional<OrdenTrabajo> ordenTrabajoOpt = ordenTrabajoRespository.findById(idOrdenTrabajo);
+		
+		if(ordenTrabajoOpt.isPresent()) {
+			OrdenTrabajo ordenTrabajo = ordenTrabajoOpt.get();
+			OrdenTrabajoDTO ordenTrabajoDTO = ordenTrabajoMapper.convertirEntityADTO(ordenTrabajo);
+			
+			List<Material> materiales = materialRepository.findByIdOrdenTrabajo(idOrdenTrabajo);
+			List<MaterialDTO> materialesDTO = materialMapper.convertirEntityADTO(materiales);
+			
+			List<PersonalParticipa> personalParticipa = personalParticipaRepository.findByIdOrdenTrabajo(idOrdenTrabajo);
+			List<PersonalParticipaDTO> personalParticipaDTO = personalParticipaMapper.convertirEntityADTO(personalParticipa);
+			
+			List<ResponsableObra> responsablesObra = responsableObraRepository.findByIdOrdenTrabajo(idOrdenTrabajo);
+			List<ResponsableObraDTO> responsablesObraDTO = responsableObraMapper.convertitEntityADTO(responsablesObra);
+			
+			ordenTrabajoDTO.setMateriales(materialesDTO);
+			ordenTrabajoDTO.setPersonalParticipa(personalParticipaDTO);
+			ordenTrabajoDTO.setResponsablesObra(responsablesObraDTO);
+			
+			return Optional.of(ordenTrabajoDTO);
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	@Transactional
+	public void eliminarOrden(Integer id) {
+		ordenTrabajoRespository.eliminarPorIdOrdenTrabajo(id);
 	}
 }
