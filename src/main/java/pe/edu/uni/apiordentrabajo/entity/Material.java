@@ -38,6 +38,9 @@ public class Material {
 	@Column(name = "n_id_orden_trabajo")
 	private Integer idOrdenTrabajo;
 	
+	@Column(name = "n_flag_registro_eliminado")
+	private Boolean flagRegistroEliminado;
+	
 	/*
 	@ManyToOne
 	@JoinColumn(name = "n_id_orden_trabajo")

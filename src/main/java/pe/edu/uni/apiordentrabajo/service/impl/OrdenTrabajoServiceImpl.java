@@ -1,6 +1,7 @@
 package pe.edu.uni.apiordentrabajo.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,6 +80,9 @@ public class OrdenTrabajoServiceImpl implements OrdenTrabajoService {
 		
 		if(personalParticipa != null) {
 			for(PersonalParticipa persona : personalParticipa) {
+				if(persona.getFlagRegistroEliminado() == null) {
+					persona.setFlagRegistroEliminado(false);
+				}
 				persona.setIdOrdenTrabajo(ordenTrabajo.getIdOrdenTrabajo());
 			}
 			personalParticipaRepository.saveAll(personalParticipa);
@@ -86,6 +90,9 @@ public class OrdenTrabajoServiceImpl implements OrdenTrabajoService {
 		
 		if(responsablesObra != null) {
 			for(ResponsableObra responsableObra : responsablesObra) {
+				if(responsableObra.getFlagRegistroEliminado() == null) {
+					responsableObra.setFlagRegistroEliminado(false);
+				}
 				responsableObra.setIdOrdenTrabajo(ordenTrabajo.getIdOrdenTrabajo());
 			}
 			responsableObraRepository.saveAll(responsablesObra);
@@ -93,6 +100,9 @@ public class OrdenTrabajoServiceImpl implements OrdenTrabajoService {
 		
 		if(materiales != null) {
 			for(Material material : materiales) {
+				if(material.getFlagRegistroEliminado() == null) {
+					material.setFlagRegistroEliminado(false);
+				}
 				material.setIdOrdenTrabajo(ordenTrabajo.getIdOrdenTrabajo());
 			}
 			materialRepository.saveAll(materiales);
@@ -228,5 +238,37 @@ public class OrdenTrabajoServiceImpl implements OrdenTrabajoService {
 	@Transactional
 	public void eliminarOrden(Integer id) {
 		ordenTrabajoRespository.eliminarPorIdOrdenTrabajo(id);
+		materialRepository.eliminarPorIdOrdenTrabajo(id);
+		personalParticipaRepository.eliminarPorIdOrdenTrabajo(id);
+		responsableObraRepository.eliminarPorIdOrdenTrabajo(id);
+	}
+
+	@Override
+	public List<OrdenTrabajoDTO> obtenerOrdenes() {
+		List<OrdenTrabajo> ordenesTrabajo = ordenTrabajoRespository.findAll();
+		
+		List<OrdenTrabajoDTO> ordenesTrabajoDTO = new ArrayList<>();
+		
+		for(OrdenTrabajo ordenTrabajo : ordenesTrabajo) {
+			Integer idOrdenTrabajo = ordenTrabajo.getIdOrdenTrabajo();
+			OrdenTrabajoDTO ordenTrabajoDTO = ordenTrabajoMapper.convertirEntityADTO(ordenTrabajo);
+			
+			List<Material> materiales = materialRepository.findByIdOrdenTrabajo(idOrdenTrabajo);
+			List<MaterialDTO> materialesDTO = materialMapper.convertirEntityADTO(materiales);
+			
+			List<PersonalParticipa> personalParticipa = personalParticipaRepository.findByIdOrdenTrabajo(idOrdenTrabajo);
+			List<PersonalParticipaDTO> personalParticipaDTO = personalParticipaMapper.convertirEntityADTO(personalParticipa);
+			
+			List<ResponsableObra> responsablesObra = responsableObraRepository.findByIdOrdenTrabajo(idOrdenTrabajo);
+			List<ResponsableObraDTO> responsablesObraDTO = responsableObraMapper.convertitEntityADTO(responsablesObra);
+			
+			ordenTrabajoDTO.setMateriales(materialesDTO);
+			ordenTrabajoDTO.setPersonalParticipa(personalParticipaDTO);
+			ordenTrabajoDTO.setResponsablesObra(responsablesObraDTO);
+			
+			ordenesTrabajoDTO.add(ordenTrabajoDTO);
+		}
+		
+		return ordenesTrabajoDTO;
 	}
 }

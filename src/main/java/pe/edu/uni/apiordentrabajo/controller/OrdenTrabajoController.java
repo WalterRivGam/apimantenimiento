@@ -2,6 +2,7 @@ package pe.edu.uni.apiordentrabajo.controller;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,8 +29,8 @@ public class OrdenTrabajoController {
 		this.ordenTrabajoService = ordenTrabajoService;
 	}
 
-	@PostMapping("registrar")
-	public ResponseEntity<?> registrarOrden(@RequestBody OrdenTrabajoDTO ordenTrabajoDTO) {
+	@PostMapping("guardar")
+	public ResponseEntity<?> guardarOrden(@RequestBody OrdenTrabajoDTO ordenTrabajoDTO) {
 		
 		String accion = (ordenTrabajoDTO.getIdOrdenTrabajo() == null) ? "registró" : "actualizó";
 		
@@ -39,7 +40,7 @@ public class OrdenTrabajoController {
 			int idOrdenTrabajo = ordenTrabajoDTO.getIdOrdenTrabajo();
 
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(String.format("Se %s orden de trabajo: ID=%d, NRO. ORDEN DE TRABAJO=%s", accion,
+					.body(String.format("Se %s orden de trabajo con id=%d y nro. de orden de trabajo=%s", accion,
 							idOrdenTrabajo, nroOrdenTrabajo));
 		} catch (Exception ex) {
 			Map<String, Object> respuesta = new LinkedHashMap<>();
@@ -47,7 +48,7 @@ public class OrdenTrabajoController {
 	        respuesta.put("status", HttpStatus.BAD_REQUEST.value());
 	        respuesta.put("error", "Bad Request");
 	        respuesta.put("message", ex.getMessage());
-	        respuesta.put("path", "/mantenimiento/ordenes/registrar");
+	        respuesta.put("path", "/mantenimiento/ordenes/guardar");
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
 		}
 	}
@@ -77,6 +78,23 @@ public class OrdenTrabajoController {
 	        respuesta.put("path", "/mantenimiento/ordenes/obtener/" + id);
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
 	    }
+	}
+	
+	@GetMapping("obtener")
+	public ResponseEntity<?> obtenerOrdenes() {
+		try {
+			List<OrdenTrabajoDTO> ordenesTrabajoDTO = ordenTrabajoService.obtenerOrdenes();
+			
+			return ResponseEntity.status(HttpStatus.OK).body(ordenesTrabajoDTO);
+		} catch(Exception ex) {
+			Map<String, Object> respuesta = new LinkedHashMap<>();
+	        respuesta.put("timestamp", Instant.now());
+	        respuesta.put("status", HttpStatus.BAD_REQUEST.value());
+	        respuesta.put("error", "Bad Request");
+	        respuesta.put("message", ex.getMessage());
+	        respuesta.put("path", "/mantenimiento/ordenes/obtener");
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+		}
 	}
 
 	

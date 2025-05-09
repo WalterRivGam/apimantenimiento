@@ -53,4 +53,7 @@ public class PersonalParticipa {
 	
 	@Column(name = "v_nro_documento")
 	private String nroDocumento;
+	
+	@Column(name = "n_flag_registro_eliminado")
+	private Boolean flagRegistroEliminado;
 }

@@ -16,4 +16,5 @@ public class PersonalParticipaDTO {
 	private Integer idOrdenTrabajo;
 	private String tipoDocumento;
 	private String nroDocumento;
+	private Boolean flagRegistroEliminado;
 }

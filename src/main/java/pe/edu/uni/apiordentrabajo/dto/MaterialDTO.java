@@ -13,4 +13,5 @@ public class MaterialDTO {
 	private Integer cantidad;
 	private String valor;
 	private Integer idOrdenTrabajo;
+	private Boolean flagRegistroEliminado;
 }
