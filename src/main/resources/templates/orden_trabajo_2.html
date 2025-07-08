@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orden de Trabajo</title>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="/mantenimiento/css/orden_de_trabajo.css" />
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+	integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script>
+  const idOrdenTrabajo = [[${idOrdenTrabajo}]];
+</script>
+</head>
+<body>
+	<div class="card">
+		<h2>UNIDAD DE SERVICIOS GENERALES</h2>
+		<h3>ÁREA DE MANTENIMIENTO</h3>
+		
+		<input type="hidden" id="nombresUsuario" th:value="${nombresUsuario}">
+		
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="nro-expediente">NÚMERO DE EXPEDIENTE:</label> <input
+					type="text" id="nro-expediente" name="nro-expediente" disabled
+					style="background-color: #ced4da;" autocomplete="off">
+			</div>
+			<div class="col-50">
+				<label for="anio-expediente">AÑO DE EXPEDIENTE:</label> <input
+					type="text" id="anio-expediente" name="anio-expediente" disabled
+					style="background-color: #ced4da;" autocomplete="off">
+			</div>
+		</div>
+
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="nro-orden-trabajo">NRO. ORDEN DE TRABAJO:</label> <input
+					type="text" id="nro-orden-trabajo" name="nro-orden-trabajo"
+					disabled style="background-color: #ced4da;" autocomplete="off">
+			</div>
+			<div class="col-50">
+				<label for="taller">TALLER:</label> <input type="text" id="taller"
+					name="taller" disabled style="background-color: #ced4da;"
+					autocomplete="off">
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>PERSONAL QUE PARTICIPA</h2>
+		<table class="materials-table" id="personnelTable"
+			style="width: 100%;">
+			<thead>
+				<tr>
+					<th style="width: 5%;">N°</th>
+					<th style="width: 10%;">FECHA DE INICIO</th>
+					<th style="width: 53%;">NOMBRES</th>
+					<th style="width: 8%;">DÍAS</th>
+					<th style="width: 8%;">HORAS</th>
+					<th style="width: 8%;">RESP. OBRA</th>
+					<th style="width: 8%;">TÉCNICO</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+		<button type="button" class="add-material-btn" style="width: 150px;"
+			onclick="addPersonnelRow()">
+			<i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Agregar Personal
+		</button>
+
+		<div class="row mx-1"
+			style="display: flex; flex-wrap: nowrap; gap: 20px;">
+			<div class="col-50">
+				<label for="fecha-recepcion-taller">FECHA DE RECEPCIÓN DEL
+					TALLER:</label> <input type="date" id="fecha-recepcion-taller"
+					name="fecha-recepcion-taller" style="width: 100%;">
+			</div>
+			<div class="col-50">
+				<label for="fecha-trabajo-realizado">FECHA DE TRABAJO
+					REALIZADO:</label> <input type="date" id="fecha-trabajo-realizado"
+					name="fecha-trabajo-realizado">
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<h2>DIAGNÓSTICO Y OBSERVACIONES</h2>
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="diagnostico">DIAGNÓSTICO:</label>
+				<textarea id="diagnostico" name="diagnostico"></textarea>
+			</div>
+			<div class="col-50">
+				<label for="observaciones">OBSERVACIONES:</label>
+				<textarea id="observaciones" name="observaciones"></textarea>
+			</div>
+		</div>
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="fecha-atencion-taller">FECHA DE ATENCIÓN DEL
+					TALLER:</label> <input type="date" id="fecha-atencion-taller"
+					name="fecha-atencion-taller" style="width: 100%;">
+			</div>
+			<div class="col-50"></div>
+		</div>
+	</div>
+
+	<div class="card mb-0">
+		<h2>RELACIÓN DE MATERIALES</h2>
+
+		<table class="materials-table" id="materialsTable"
+			style="width: 100%;">
+			<thead>
+				<tr>
+					<th style="width: 5%;">N°</th>
+					<th style="width: 67%;">DESCRIPCIÓN</th>
+					<th style="width: 8%;">UNIDAD</th>
+					<th style="width: 8%;">CANTIDAD</th>
+					<th style="width: 12%;">VALOR UN.</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td colspan="4" style="text-align: right;"><strong>TOTAL:</strong></td>
+					<td><input type="text" name="material-total" readonly
+						class="mb-0" autocomplete="off"></td>
+				</tr>
+			</tbody>
+		</table>
+		<button type="button" class="add-material-btn mb-0"
+			style="width: 150px;" onclick="addMaterialRow()">
+			<i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Agregar Material
+		</button>
+	</div>
+
+
+
+	<div style="display: flex;">
+		<button class="fs-105 mt-0 mr-3"
+			style="width: 150px; font-weight: bold;"
+			id="btn-enviar-orden-trabajo">
+			<i class="fa-regular fa-paper-plane"></i>&nbsp;&nbsp;Enviar
+		</button>
+		<div id="carga-btn-enviar" style="display: none;">
+			<div class="spinner-border text-danger" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal genérico -->
+	<div class="modal fade" id="modal-generico" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="titulo-modal-generico"></h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<span id="mensaje-modal-generico"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="/mantenimiento/js/orden_trabajo_2.js"></script>
+
+</body>
+</html>

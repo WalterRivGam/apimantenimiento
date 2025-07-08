@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orden de Trabajo</title>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+	integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+	crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="css/orden_de_trabajo.css" />
+</head>
+<body>
+	<div class="card">
+		<h2>UNIDAD DE SERVICIOS GENERALES</h2>
+		<h3>ÁREA DE MANTENIMIENTO</h3>
+		<h2>ORDEN DE TRABAJO</h2>
+		<input type="hidden" id="nombresUsuario" th:value="${nombresUsuario}">
+		
+
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="nro-expediente">NÚMERO DE EXPEDIENTE: <span
+					style="color: #e03131;">(*)</span></label> <input type="text"
+					id="nro-expediente" name="nro-expediente" autocomplete="off">
+			</div>
+			<div class="col-50">
+				<label for="anio-expediente">AÑO DE EXPEDIENTE: <span
+					style="color: #e03131;">(*)</span></label> <input type="text"
+					id="anio-expediente" name="anio-expediente" autocomplete="off">
+			</div>
+		</div>
+		<div style="display: flex;">
+			<input type="checkbox" id="emergencia" name="emergencia" /> <label
+				for="emergencia" class="label-check-box">EMERGENCIA</label>
+		</div>
+
+		<div class="row mx-1">
+
+			<div class="col-50">
+				<label for="nro-orden-trabajo">NRO. ORDEN DE TRABAJO:</label>
+				<div style="display: flex;">
+					<input type="text" id="nro-orden-trabajo" name="nro-orden-trabajo"
+						class="mb-0" autocomplete="off">
+					<button id="btn-buscar-orden" class="mt-0" style="width: 100px;">
+						<i class="fa-solid fa-magnifying-glass"></i> Buscar
+					</button>
+					<input style="display: none;" type="text" id="id-orden-trabajo">
+				</div>
+			</div>
+
+			<div class="col-50">
+				<label for="dependencia">DEPENDENCIA: <span
+					style="color: #e03131;">(*)</span></label> <input type="text"
+					id="dependencia" name="dependencia" autocomplete="off">
+			</div>
+
+		</div>
+		<div class="row mx-1">
+
+			<div class="col-50">
+				<label for="taller">TALLER: <span style="color: #e03131;">(*)</span></label>
+				<input type="text" id="taller" name="taller" autocomplete="off">
+			</div>
+
+
+			<div class="col-50">
+				<label for="sub-dependencia">SUB-DEPENDENCIA: <span
+					style="color: #e03131;">(*)</span></label> <input type="text"
+					id="sub-dependencia" name="sub-dependencia" autocomplete="off">
+			</div>
+
+		</div>
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="nro-documento">NRO. DOCUMENTO: <span
+					style="color: #e03131;">(*)</span></label> <input type="text"
+					id="nro-documento" name="nro-documento" autocomplete="off">
+			</div>
+			<div class="col-50">
+				<label for="fecha-recepcion-am">FECHA DE RECEPCIÓN AM: <span
+					style="color: #e03131;">(*)</span></label> <input type="date"
+					id="fecha-recepcion-am" name="fecha-recepcion-am">
+			</div>
+		</div>
+		<div class="row mx-1">
+			<div class="col-50">
+				<label for="fecha-dependencia">FECHA DEPENDENCIA: <span
+					style="color: #e03131;">(*)</span></label> <input type="date"
+					id="fecha-dependencia" name="fecha-dependencia">
+			</div>
+			<div class="col-50">
+				<label for="fecha-recepcion-usg">FECHA DE RECEPCIÓN USG: <span
+					style="color: #e03131;">(*)</span></label> <input type="date"
+					id="fecha-recepcion-usg" name="fecha-recepcion-usg">
+			</div>
+		</div>
+
+		<div class="checkbox-group" style="width: 100%;">
+
+			<div style="display: flex">
+				<input type="radio" id="instalacion" name="trabajo-tipo"
+					value="instalacion" checked> <label for="instalacion"
+					class="label-check-box">INSTALACIÓN</label>
+			</div>
+
+			<div style="display: flex">
+				<input type="radio" id="revision" name="trabajo-tipo"
+					value="revision"> <label for="revision"
+					class="label-check-box">REVISIÓN</label>
+			</div>
+
+			<div style="display: flex">
+				<input type="radio" id="mantenimiento" name="trabajo-tipo"
+					value="mantenimiento"> <label for="mantenimiento"
+					class="label-check-box">MANTENIMIENTO</label>
+			</div>
+
+			<div style="display: flex">
+				<input type="radio" id="reparacion" name="trabajo-tipo"
+					value="reparacion"> <label for="reparacion"
+					class="label-check-box">REPARACIÓN</label>
+			</div>
+
+			<div style="display: flex">
+				<input type="radio" id="cambio" name="trabajo-tipo" value="cambio">
+				<label for="cambio" class="label-check-box">CAMBIO</label>
+			</div>
+
+			<div style="display: flex">
+				<input type="radio" id="otros" name="trabajo-tipo" value="otros">
+				<label for="otros" class="label-check-box">OTROS</label>
+			</div>
+		</div>
+
+
+		<label for="trabajo-solicitado">TRABAJO SOLICITADO: <span
+			style="color: #e03131;">(*)</span></label>
+		<textarea id="trabajo-solicitado" name="trabajo-solicitado"></textarea>
+	</div>
+
+	<div style="display: flex;">
+		<button class="fs-105 mt-0 mr-3"
+			style="width: 150px; font-weight: bold;" id="btn-registrar-orden">
+			<i class="fa-regular fa-paper-plane"></i>&nbsp;&nbsp;Enviar
+		</button>
+		<button class="fs-105 mt-0 mr-3 btn-cancelar"
+			style="width: 150px; font-weight: bold;" id="btn-cancelar-orden">
+			<i class="fa-solid fa-ban"></i>&nbsp;&nbsp;Cancelar
+		</button>
+		<button class="fs-105 mt-0 mr-3"
+			style="width: 150px; font-weight: bold;" id="btn-siguiente">
+			<i class="fa-solid fa-right-long"></i>&nbsp;&nbsp;Siguiente
+		</button>
+		<div id="carga-btn-enviar" style="display: none;">
+			<div class="spinner-border text-danger" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal campo vacío -->
+	<div class="modal fade" id="modal-campo-vacio" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Campo vacío</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Por favor ingrese o seleccione un valor para: <span
+						style="font-weight: bold;" id="campo-vacio"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal nro de orden de trabajo -->
+	<div class="modal fade" id="modal-nro-orden-trabajo" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Nro. de orden de trabajo</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					Se ha registrado la orden de trabajo: <span
+						style="font-weight: bold;" id="cod-orden-trabajo"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal error orden de trabajo -->
+	<div class="modal fade" id="modal-error-orden-trabajo" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Error orden de trabajo</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">Ha ocurrido un error al registrar la
+					orden de trabajo.</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal genérico -->
+	<div class="modal fade" id="modal-generico" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="titulo-modal-generico"></h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<span id="mensaje-modal-generico"></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="js/registrar_orden.js"></script>
+</body>
+</html>

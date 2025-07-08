@@ -17,4 +17,5 @@ public class PersonalParticipaDTO {
 	private String tipoDocumento;
 	private String nroDocumento;
 	private Boolean flagRegistroEliminado;
+	private Boolean esResponsable;
 }

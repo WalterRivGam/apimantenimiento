@@ -22,7 +22,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pe.edu.uni.apiordentrabajo.dto.MaterialDTO;
 import pe.edu.uni.apiordentrabajo.dto.PersonalParticipaDTO;
-import pe.edu.uni.apiordentrabajo.dto.ResponsableObraDTO;
 
 @Entity
 @Table(name = "t_orden_trabajo")
@@ -112,24 +111,13 @@ public class OrdenTrabajo {
 	@Column(name = "n_id_solicitud")
 	private Integer idSolicitud;
 	
+	@Column(name = "v_tecnico")
+	private String tecnico;
+	
 	@Transient
 	private List<MaterialDTO> materiales;
 	
 	@Transient
 	private List<PersonalParticipaDTO> personalParticipa;
-	
-	@Transient
-	private List<ResponsableObraDTO> responsablesObra;
-
-	/*
-	@OneToMany(mappedBy = "ordenTrabajo", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	private List<Material> materiales;
-
-	@OneToMany(mappedBy = "ordenTrabajo", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	private List<PersonalParticipa> personalParticipa;
-
-	@OneToMany(mappedBy = "ordenTrabajo", cascade = { CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
-	private List<ResponsableObra> responsablesObra;
-	*/
 
 }

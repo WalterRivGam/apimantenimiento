@@ -1,10 +1,13 @@
 package pe.edu.uni.apiordentrabajo.controller;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,88 +33,127 @@ public class OrdenTrabajoController {
 	}
 
 	@PostMapping("guardar")
-	public ResponseEntity<?> guardarOrden(@RequestBody OrdenTrabajoDTO ordenTrabajoDTO) {
-		
-		String accion = (ordenTrabajoDTO.getIdOrdenTrabajo() == null) ? "registró" : "actualizó";
-		
-		try {
-			ordenTrabajoDTO = ordenTrabajoService.registrarOrden(ordenTrabajoDTO);
-			String nroOrdenTrabajo = ordenTrabajoDTO.getNroOrdenTrabajo();
-			int idOrdenTrabajo = ordenTrabajoDTO.getIdOrdenTrabajo();
-
-			return ResponseEntity.status(HttpStatus.OK)
-					.body(String.format("Se %s orden de trabajo con id=%d y nro. de orden de trabajo=%s", accion,
-							idOrdenTrabajo, nroOrdenTrabajo));
-		} catch (Exception ex) {
-			Map<String, Object> respuesta = new LinkedHashMap<>();
-	        respuesta.put("timestamp", Instant.now());
-	        respuesta.put("status", HttpStatus.BAD_REQUEST.value());
-	        respuesta.put("error", "Bad Request");
-	        respuesta.put("message", ex.getMessage());
-	        respuesta.put("path", "/mantenimiento/ordenes/guardar");
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
-		}
-	}
-	
-	@GetMapping("obtener/{id}")
-	public ResponseEntity<?> obtenerOrden(@PathVariable Integer id) {
+	public ResponseEntity<?> guardarOrden(@RequestBody OrdenTrabajoDTO ordenTrabajoDTO, HttpServletRequest request) {
 	    try {
-	        Optional<OrdenTrabajoDTO> ordenTrabajoOpt = ordenTrabajoService.obtenerOrden(id);
-
-	        if (ordenTrabajoOpt.isPresent()) {
-	            return ResponseEntity.ok(ordenTrabajoOpt.get());
+	        String ipCliente = request.getHeader("X-Forwarded-For");
+	        if (ipCliente == null || ipCliente.isEmpty() || "unknown".equalsIgnoreCase(ipCliente)) {
+	            ipCliente = request.getRemoteAddr();
 	        } else {
-	            Map<String, Object> respuesta = new LinkedHashMap<>();
-	            respuesta.put("timestamp", Instant.now());
-	            respuesta.put("status", HttpStatus.NOT_FOUND.value());
-	            respuesta.put("error", "Not Found");
-	            respuesta.put("message", "Orden de trabajo no encontrada");
-	            respuesta.put("path", "/mantenimiento/ordenes/obtener/" + id);
-	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
+	            ipCliente = ipCliente.split(",")[0].trim();
 	        }
+
+	        if (ordenTrabajoDTO.getIdOrdenTrabajo() == null) {
+	            ordenTrabajoDTO.setFechaRegistro(LocalDateTime.now());
+	            ordenTrabajoDTO.setIpRegistro(ipCliente);
+	        } else {
+	            ordenTrabajoDTO.setFechaActualizacion(LocalDateTime.now());
+	            ordenTrabajoDTO.setIpActualizacion(ipCliente);
+	        }
+
+	        ordenTrabajoDTO = ordenTrabajoService.registrarOrden(ordenTrabajoDTO);
+	        Map<String, Object> respuesta = new LinkedHashMap<>();
+	        respuesta.put("idOrdenTrabajo", ordenTrabajoDTO.getIdOrdenTrabajo());
+	        respuesta.put("nroOrdenTrabajo", ordenTrabajoDTO.getNroOrdenTrabajo());
+
+	        return ResponseEntity.ok(respuesta);
+
 	    } catch (Exception ex) {
 	        Map<String, Object> respuesta = new LinkedHashMap<>();
 	        respuesta.put("timestamp", Instant.now());
 	        respuesta.put("status", HttpStatus.BAD_REQUEST.value());
 	        respuesta.put("error", "Bad Request");
 	        respuesta.put("message", ex.getMessage());
-	        respuesta.put("path", "/mantenimiento/ordenes/obtener/" + id);
+	        respuesta.put("path", "/mantenimiento/ordenes/guardar");
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
 	    }
+	}
+
+
+	@GetMapping("obtener/{id}")
+	public ResponseEntity<?> obtenerOrden(@PathVariable Integer id) {
+		try {
+			Optional<OrdenTrabajoDTO> ordenTrabajoOpt = ordenTrabajoService.obtenerOrden(id);
+
+			if (ordenTrabajoOpt.isPresent()) {
+				return ResponseEntity.ok(ordenTrabajoOpt.get());
+			} else {
+				Map<String, Object> respuesta = new LinkedHashMap<>();
+				respuesta.put("timestamp", Instant.now());
+				respuesta.put("status", HttpStatus.NOT_FOUND.value());
+				respuesta.put("error", "Not Found");
+				respuesta.put("message", "Orden de trabajo no encontrada");
+				respuesta.put("path", "/mantenimiento/ordenes/obtener/" + id);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
+			}
+		} catch (Exception ex) {
+			Map<String, Object> respuesta = new LinkedHashMap<>();
+			respuesta.put("timestamp", Instant.now());
+			respuesta.put("status", HttpStatus.BAD_REQUEST.value());
+			respuesta.put("error", "Bad Request");
+			respuesta.put("message", ex.getMessage());
+			respuesta.put("path", "/mantenimiento/ordenes/obtener/" + id);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+		}
+	}
+	
+	@GetMapping("obtenerPorNroOrden/{nroOrden}")
+	public ResponseEntity<?> obtenerOrden(@PathVariable String nroOrden) {
+		try {
+			Optional<OrdenTrabajoDTO> ordenTrabajoOpt = ordenTrabajoService.obtenerOrden(nroOrden);
+
+			if (ordenTrabajoOpt.isPresent()) {
+				return ResponseEntity.ok(ordenTrabajoOpt.get());
+			} else {
+				Map<String, Object> respuesta = new LinkedHashMap<>();
+				respuesta.put("timestamp", Instant.now());
+				respuesta.put("status", HttpStatus.NOT_FOUND.value());
+				respuesta.put("error", "Not Found");
+				respuesta.put("message", "Orden de trabajo no encontrada");
+				respuesta.put("path", "/mantenimiento/ordenes/obtenerPorNroOrden/" + nroOrden);
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
+			}
+		} catch (Exception ex) {
+			Map<String, Object> respuesta = new LinkedHashMap<>();
+			respuesta.put("timestamp", Instant.now());
+			respuesta.put("status", HttpStatus.BAD_REQUEST.value());
+			respuesta.put("error", "Bad Request");
+			respuesta.put("message", ex.getMessage());
+			respuesta.put("path", "/mantenimiento/ordenes/obtenerPorNroOrden/" + nroOrden);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+		}
 	}
 	
 	@GetMapping("obtener")
 	public ResponseEntity<?> obtenerOrdenes() {
 		try {
 			List<OrdenTrabajoDTO> ordenesTrabajoDTO = ordenTrabajoService.obtenerOrdenes();
-			
+
 			return ResponseEntity.status(HttpStatus.OK).body(ordenesTrabajoDTO);
-		} catch(Exception ex) {
+		} catch (Exception ex) {
 			Map<String, Object> respuesta = new LinkedHashMap<>();
-	        respuesta.put("timestamp", Instant.now());
-	        respuesta.put("status", HttpStatus.BAD_REQUEST.value());
-	        respuesta.put("error", "Bad Request");
-	        respuesta.put("message", ex.getMessage());
-	        respuesta.put("path", "/mantenimiento/ordenes/obtener");
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+			respuesta.put("timestamp", Instant.now());
+			respuesta.put("status", HttpStatus.BAD_REQUEST.value());
+			respuesta.put("error", "Bad Request");
+			respuesta.put("message", ex.getMessage());
+			respuesta.put("path", "/mantenimiento/ordenes/obtener");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
 		}
 	}
 
-	
 	@GetMapping("eliminar/{id}")
 	public ResponseEntity<?> eliminarOrden(@PathVariable Integer id) {
 		try {
 			ordenTrabajoService.eliminarOrden(id);
-			
+
 			return ResponseEntity.ok(String.format("Orden eliminada con id=%d", id));
 		} catch (Exception ex) {
-	        Map<String, Object> respuesta = new LinkedHashMap<>();
-	        respuesta.put("timestamp", Instant.now());
-	        respuesta.put("status", HttpStatus.BAD_REQUEST.value());
-	        respuesta.put("error", "Bad Request");
-	        respuesta.put("message", ex.getMessage());
-	        respuesta.put("path", "/mantenimiento/ordenes/" + id);
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
-	    }
+			Map<String, Object> respuesta = new LinkedHashMap<>();
+			respuesta.put("timestamp", Instant.now());
+			respuesta.put("status", HttpStatus.BAD_REQUEST.value());
+			respuesta.put("error", "Bad Request");
+			respuesta.put("message", ex.getMessage());
+			respuesta.put("path", "/mantenimiento/ordenes/" + id);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(respuesta);
+		}
 	}
 }
