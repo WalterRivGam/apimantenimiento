@@ -10,17 +10,18 @@ function addMaterialRow() {
 			<td><input type="text" name="material-description-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
 			<td><input type="text" name="material-unit-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
 			<td><input type="number" name="material-quantity-${materialRowCount}" class="mb-0"></td>
-			<td><input type="text" name="material-value-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
 			`;
-	tableBody.insertBefore(newRow, tableBody.lastElementChild);
+	//<td><input type="text" name="material-value-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
+	//tableBody.insertBefore(newRow, tableBody.lastElementChild);
+	tableBody.appendChild(newRow);
 	
-	// Asociar eventos para recalcular total
+	/*// Asociar eventos para recalcular total
 	  const cantidadInput = newRow.querySelector(`input[name="material-quantity-${materialRowCount}"]`);
 	  const valorInput = newRow.querySelector(`input[name="material-value-${materialRowCount}"]`);
 
 	  [cantidadInput, valorInput].forEach(input => {
 	    input.addEventListener("input", calcularTotalMateriales);
-	  });
+	  });*/
 }
 
 function addPersonnelRow() {
@@ -78,19 +79,19 @@ function llenarTablaMateriales(materiales) {
 	  const tbody = document.querySelector("#materialsTable tbody");
 	  tbody.innerHTML = ""; // Limpiar el contenido actual de la tabla
 
-	  let total = 0;
+	  //let total = 0;
 
 	  materiales.forEach((material, index) => {
 	    const fila = document.createElement("tr");
 
 	    const cantidad = material.cantidad ?? "";
-	    const valor = material.valor ?? "";
+	    //const valor = material.valor ?? "";
 
-	    // Convertir valor a número (si es válido) para el total
+	    /*// Convertir valor a número (si es válido) para el total
 	    const valorNumerico = parseFloat(valor);
 	    if (!isNaN(valorNumerico)) {
 	      total += valorNumerico;
-	    }
+	    }*/
 
 	    fila.innerHTML = `
 	      <td>${index + 1}</td>
@@ -98,19 +99,19 @@ function llenarTablaMateriales(materiales) {
 	      <td><input type="text" name="material-description-${index + 1}" value="${material.descripcion || ''}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
 	      <td><input type="text" name="material-unit-${index + 1}" value="${material.unidad || ''}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
 	      <td><input type="number" name="material-quantity-${index + 1}" value="${cantidad}" class="mb-0" style="width: 100%;"></td>
-	      <td><input type="text" name="material-value-${index + 1}" value="${valor}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
 	    `;
+	    //<td><input type="text" name="material-value-${index + 1}" value="${valor}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
 
 	    tbody.appendChild(fila);
 	  });
 
-	  // Fila del total al final
+	  /*// Fila del total al final
 	  const filaTotal = document.createElement("tr");
 	  filaTotal.innerHTML = `
 	    <td colspan="4" style="text-align: right;"><strong>TOTAL:</strong></td>
 	    <td><input type="text" name="material-total" readonly value="${total.toFixed(2)}" class="mb-0" style="width: 100%; font-weight: bold;" autocomplete = "off"></td>
 	  `;
-	  tbody.appendChild(filaTotal);
+	  tbody.appendChild(filaTotal);*/
 	  materialRowCount = materiales.length;
 }
 
@@ -199,16 +200,16 @@ function obtenerMateriales() {
 
 	  const materiales = [];
 
-	  // Recorremos todas las filas excepto la última (TOTAL)
-	  for (let i = 0; i < filas.length - 1; i++) {
+	  for (let i = 0; i < filas.length; i++) {
 	    const fila = filas[i];
 
 	    const idMaterial = fila.querySelector(`input[name="material-id-${i + 1}"]`)?.value || null;
 	    const descripcion = fila.querySelector(`input[name="material-description-${i + 1}"]`)?.value?.trim() || null;
 	    const unidad = fila.querySelector(`input[name="material-unit-${i + 1}"]`)?.value?.trim() || null;
 	    const cantidadStr = fila.querySelector(`input[name="material-quantity-${i + 1}"]`)?.value;
-	    const valor = fila.querySelector(`input[name="material-value-${i + 1}"]`)?.value?.trim() || null;
-
+	    //const valor = fila.querySelector(`input[name="material-value-${i + 1}"]`)?.value?.trim() || null;
+	    const valor = null;
+	    
 	    const cantidad = isNaN(parseInt(cantidadStr)) ? null : parseInt(cantidadStr);
 
 	    const filaVacia = !descripcion && !unidad && cantidad === null && !valor;
