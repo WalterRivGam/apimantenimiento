@@ -111,9 +111,6 @@ public class OrdenTrabajo {
 	@Column(name = "n_id_solicitud")
 	private Integer idSolicitud;
 	
-	@Column(name = "v_tecnico")
-	private String tecnico;
-	
 	@Transient
 	private List<MaterialDTO> materiales;
 	

@@ -42,5 +42,4 @@ public class OrdenTrabajoDTO {
 	private Integer idSolicitud;
 	private List<MaterialDTO> materiales;
 	private List<PersonalParticipaDTO> personalParticipa;
-	private String tecnico;
 }

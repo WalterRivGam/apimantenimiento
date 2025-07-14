@@ -104,7 +104,6 @@ public class OrdenTrabajoServiceImpl implements OrdenTrabajoService {
 		ordenTrabajoDTO.setMateriales(materialesDTO);
 
 		return ordenTrabajoDTO;
-
 	}
 
 	@Transactional

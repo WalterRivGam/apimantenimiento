@@ -2,43 +2,52 @@ let materialRowCount = 0;
 let personnelRowCount = 0;
 
 function addMaterialRow() {
-	materialRowCount++;
-	const tableBody = document.querySelector('#materialsTable tbody');
-	const newRow = document.createElement('tr');
-	newRow.innerHTML = `
-			<td>${materialRowCount}</td>
-			<td><input type="text" name="material-description-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
-			<td><input type="text" name="material-unit-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
-			<td><input type="number" name="material-quantity-${materialRowCount}" class="mb-0"></td>
-			`;
-	//<td><input type="text" name="material-value-${materialRowCount}" class="mb-0" autocomplete = "off"></td>
-	//tableBody.insertBefore(newRow, tableBody.lastElementChild);
-	tableBody.appendChild(newRow);
-	
-	/*// Asociar eventos para recalcular total
-	  const cantidadInput = newRow.querySelector(`input[name="material-quantity-${materialRowCount}"]`);
-	  const valorInput = newRow.querySelector(`input[name="material-value-${materialRowCount}"]`);
+	  materialRowCount++;
+	  const tableBody = document.querySelector('#materialsTable tbody');
+	  const newRow = document.createElement('tr');
 
-	  [cantidadInput, valorInput].forEach(input => {
-	    input.addEventListener("input", calcularTotalMateriales);
-	  });*/
+	  newRow.classList.add("fila-material");
+	  newRow.dataset.esNuevo = "true";
+
+	  newRow.innerHTML = `
+	    <td>${materialRowCount}</td>
+	    <td><input type="text" name="material-description-${materialRowCount}" class="mb-0" autocomplete="off"></td>
+	    <td><input type="text" name="material-unit-${materialRowCount}" class="mb-0" autocomplete="off"></td>
+	    <td><input type="number" name="material-quantity-${materialRowCount}" class="mb-0"></td>
+	    <td class="text-center">
+	      <i class="fas fa-minus-circle fa-xl icono-eliminar" style="color: #800000; cursor: pointer;"></i>
+	    </td>
+	  `;
+
+	  tableBody.appendChild(newRow);
+
+	  // Reordenar por si acaso, aunque normalmente no necesario después de agregar
+	  reordenarFilasMateriales();
 }
 
 function addPersonnelRow() {
-	personnelRowCount++;
-	const tableBody = document.querySelector('#personnelTable tbody');
-	const newRow = document.createElement('tr');
-	newRow.innerHTML = `
-			<td>${personnelRowCount}</td>
-			<td><input type="date" name="personal-fecha-${personnelRowCount}" class="mb-0"></td>
-			<td><input type="text" name="personal-nombre-${personnelRowCount}" class="mb-0" autocomplete = "off"></td>
-			<td><input type="text" name="personal-dias-${personnelRowCount}" class="mb-0" autocomplete = "off"></td>
-			<td><input type="text" name="personal-horas-${personnelRowCount}" class="mb-0" autocomplete = "off"></td>
-			<td><input type="checkbox" name="personal-responsable" class="mb-0"></td>
-			<td><input type="radio" name="personal-tecnico" class="mb-0"></td>
-			`;
-	tableBody.appendChild(newRow);
+	  personnelRowCount++;
+	  const tableBody = document.querySelector('#personnelTable tbody');
+	  const newRow = document.createElement('tr');
+
+	  newRow.classList.add("fila-personal");
+	  newRow.dataset.esNuevo = "true";
+
+	  newRow.innerHTML = `
+	    <td>${personnelRowCount}</td>
+	    <td><input type="date" name="personal-fecha-${personnelRowCount}" class="mb-0"></td>
+	    <td><input type="text" name="personal-nombre-${personnelRowCount}" class="mb-0" autocomplete="off"></td>
+	    <td><input type="text" name="personal-dias-${personnelRowCount}" class="mb-0" autocomplete="off"></td>
+	    <td><input type="text" name="personal-horas-${personnelRowCount}" class="mb-0" autocomplete="off"></td>
+	    <td class="text-center"><input type="checkbox" name="personal-responsable" class="mb-0"></td>
+	    <td class="text-center"><input type="radio" name="personal-tecnico" class="mb-0"></td>
+	    <td class="text-center"><i class="fas fa-minus-circle fa-xl icono-eliminar" style="color: #800000; cursor: pointer;"></i></td>
+	  `;
+
+	  tableBody.appendChild(newRow);
+	  reordenarFilasPersonal();
 }
+
         
 document.addEventListener("DOMContentLoaded", () => {
 	  fetch(`/mantenimiento/ordenes/obtener/${idOrdenTrabajo}`)
@@ -76,71 +85,109 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function llenarTablaMateriales(materiales) {
-	  const tbody = document.querySelector("#materialsTable tbody");
-	  tbody.innerHTML = ""; // Limpiar el contenido actual de la tabla
+	const tbody = document.querySelector("#materialsTable tbody");
+	tbody.innerHTML = "";
 
-	  //let total = 0;
+	materiales
+		.filter(m => !m.flagRegistroEliminado)
+		.forEach((material, index) => {
+			const fila = document.createElement("tr");
+			fila.classList.add("fila-material");
+			fila.dataset.idMaterial = material.idMaterial || "";
+			fila.dataset.esNuevo = material.idMaterial ? "false" : "true";
 
-	  materiales.forEach((material, index) => {
-	    const fila = document.createElement("tr");
+			const cantidad = material.cantidad ?? "";
 
-	    const cantidad = material.cantidad ?? "";
-	    //const valor = material.valor ?? "";
+			fila.innerHTML = `
+				<td>${index + 1}</td>
+				<td style="display: none;">
+					<input type="hidden" name="material-id-${index + 1}" value="${material.idMaterial || ''}">
+				</td>
+				<td><input type="text" name="material-description-${index + 1}" value="${material.descripcion || ''}" class="mb-0" style="width: 100%;" autocomplete="off"></td>
+				<td><input type="text" name="material-unit-${index + 1}" value="${material.unidad || ''}" class="mb-0" style="width: 100%;" autocomplete="off"></td>
+				<td><input type="number" name="material-quantity-${index + 1}" value="${cantidad}" class="mb-0" style="width: 100%;"></td>
+				<td class="text-center">
+					<i class="fas fa-minus-circle fa-xl icono-eliminar" style="color: #800000; cursor: pointer;"></i>
+				</td>
+			`;
 
-	    /*// Convertir valor a número (si es válido) para el total
-	    const valorNumerico = parseFloat(valor);
-	    if (!isNaN(valorNumerico)) {
-	      total += valorNumerico;
-	    }*/
+			tbody.appendChild(fila);
+		});
 
-	    fila.innerHTML = `
-	      <td>${index + 1}</td>
-	      <td style="display: none;"><input type="text" name="material-id-${index + 1}" value="${material.idMaterial || ''}"></td>
-	      <td><input type="text" name="material-description-${index + 1}" value="${material.descripcion || ''}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
-	      <td><input type="text" name="material-unit-${index + 1}" value="${material.unidad || ''}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
-	      <td><input type="number" name="material-quantity-${index + 1}" value="${cantidad}" class="mb-0" style="width: 100%;"></td>
-	    `;
-	    //<td><input type="text" name="material-value-${index + 1}" value="${valor}" class="mb-0" style="width: 100%;" autocomplete = "off"></td>
-
-	    tbody.appendChild(fila);
-	  });
-
-	  /*// Fila del total al final
-	  const filaTotal = document.createElement("tr");
-	  filaTotal.innerHTML = `
-	    <td colspan="4" style="text-align: right;"><strong>TOTAL:</strong></td>
-	    <td><input type="text" name="material-total" readonly value="${total.toFixed(2)}" class="mb-0" style="width: 100%; font-weight: bold;" autocomplete = "off"></td>
-	  `;
-	  tbody.appendChild(filaTotal);*/
-	  materialRowCount = materiales.length;
+	materialRowCount = materiales.length;
 }
 
+document.querySelector('#materialsTable tbody').addEventListener('click', function (e) {
+	  if (e.target.classList.contains('icono-eliminar')) {
+	    const fila = e.target.closest('tr');
+	    const esNuevo = fila.dataset.esNuevo === "true";
 
+	    if (esNuevo) {
+	      fila.remove(); // Borra del DOM
+	    } else {
+	      fila.style.display = "none"; // Oculta
+	      const input = document.createElement('input');
+	      input.type = "hidden";
+	      input.name = `material-eliminado-${fila.dataset.idMaterial}`;
+	      input.value = "true";
+	      fila.appendChild(input);
+	    }
+	    
+	    reordenarFilasMateriales();
+	  }
+});
+
+document.querySelector('#personnelTable tbody').addEventListener('click', function (e) {
+	  if (e.target.classList.contains('icono-eliminar')) {
+	    const fila = e.target.closest('tr');
+	    const esNuevo = fila.dataset.esNuevo === "true";
+
+	    if (esNuevo) {
+	      fila.remove();
+	    } else {
+	      fila.style.display = "none";
+	      const input = document.createElement('input');
+	      input.type = "hidden";
+	      input.name = `personal-eliminado-${fila.dataset.idPersonalParticipa}`;
+	      input.value = "true";
+	      fila.appendChild(input);
+	    }
+
+	    reordenarFilasPersonal();
+	  }
+});
 
 function llenarTablaPersonal(personalParticipa, tecnico) {
 	  const tbody = document.querySelector("#personnelTable tbody");
-	  tbody.innerHTML = ""; // Limpia la tabla actual si hay datos anteriores
+	  tbody.innerHTML = "";
 
-	  personalParticipa.forEach((persona, index) => {
-	    const fila = document.createElement("tr");
-	    const esTecnico = tecnico && tecnico === persona.nombresCompletos;
+	  personalParticipa
+	    .filter(p => !p.flagRegistroEliminado)
+	    .forEach((persona, index) => {
+	      const fila = document.createElement("tr");
+	      const esTecnico = persona.esTecnico === true;
 
-	    fila.innerHTML = `
-	      <td>${index + 1}</td>
-	      <td style="display: none;"><input type="text" name="personal-id-${index + 1}" value="${persona.idPersonalParticipa || ''}"></td>
-	      <td><input type="date" name="personal-fecha-${index + 1}" value="${persona.fechaInicio || ''}" style="width: 100%;" class="mb-0"></td>
-	      <td><input type="text" name="personal-nombre-${index + 1}" value="${persona.nombresCompletos || ''}" style="width: 100%;" class="mb-0" autocomplete = "off"></td>
-	      <td><input type="text" name="personal-dias-${index + 1}" value="${persona.dias != null ? persona.dias : ''}" style="width: 100%;" class="mb-0" autocomplete = "off"></td>
-	      <td><input type="text" name="personal-horas-${index + 1}" value="${persona.horas != null ? persona.horas : ''}" style="width: 100%;" class="mb-0" autocomplete = "off"></td>
-	      <td><input type="checkbox" name="personal-responsable" ${persona.esResponsable ? "checked" : ""}></td>
-	      <td><input type="radio" name="personal-tecnico" ${esTecnico ? "checked" : ""}></td>
-	    `;
+	      fila.classList.add("fila-personal");
+	      fila.dataset.idPersonalParticipa = persona.idPersonalParticipa || "";
+	      fila.dataset.esNuevo = persona.idPersonalParticipa ? "false" : "true";
 
-	    tbody.appendChild(fila);
-	  });
+	      fila.innerHTML = `
+	        <td>${index + 1}</td>
+	        <td style="display: none;"><input type="hidden" name="personal-id-${index + 1}" value="${persona.idPersonalParticipa || ''}"></td>
+	        <td><input type="date" name="personal-fecha-${index + 1}" value="${persona.fechaInicio || ''}" class="mb-0" style="width: 100%;"></td>
+	        <td><input type="text" name="personal-nombre-${index + 1}" value="${persona.nombresCompletos || ''}" class="mb-0" style="width: 100%;" autocomplete="off"></td>
+	        <td><input type="text" name="personal-dias-${index + 1}" value="${persona.dias ?? ''}" class="mb-0" style="width: 100%;" autocomplete="off"></td>
+	        <td><input type="text" name="personal-horas-${index + 1}" value="${persona.horas ?? ''}" class="mb-0" style="width: 100%;" autocomplete="off"></td>
+	        <td class="text-center"><input type="checkbox" name="personal-responsable" ${persona.esResponsable ? "checked" : ""}></td>
+	        <td class="text-center"><input type="radio" name="personal-tecnico" ${esTecnico ? "checked" : ""}></td>
+	        <td class="text-center"><i class="fas fa-minus-circle fa-xl icono-eliminar" style="color: #800000; cursor: pointer;"></i></td>
+	      `;
+
+	      tbody.appendChild(fila);
+	    });
+
 	  personnelRowCount = personalParticipa.length;
 }
-
 
 document.getElementById('btn-enviar-orden-trabajo').addEventListener("click", async () => {
 	  document.getElementById("carga-btn-enviar").style.display = "inline-block";
@@ -184,6 +231,11 @@ document.getElementById('btn-enviar-orden-trabajo').addEventListener("click", as
 	    $('#titulo-modal-generico').text("Orden de trabajo");
 		$('#mensaje-modal-generico').text("Orden actualizada: " + resultado.nroOrdenTrabajo);
 		$('#modal-generico').modal("show");
+		
+		const nombresCompletos = document.getElementById("nombresUsuario").value;
+		const nombresParam = encodeURIComponent(nombresCompletos);
+		window.location.href = `/mantenimiento/registrarorden?nombres=${nombresParam}`;
+		
 	  } catch (error) {
 	      console.error("Error en la petición:", error);
 	      $('#titulo-modal-generico').text("Error orden de trabajo");
@@ -203,33 +255,113 @@ function obtenerMateriales() {
 	  for (let i = 0; i < filas.length; i++) {
 	    const fila = filas[i];
 
+	    const eliminadoInput = fila.querySelector(`input[name^="material-eliminado-"]`);
+	    const estaEliminado = eliminadoInput !== null;
+
 	    const idMaterial = fila.querySelector(`input[name="material-id-${i + 1}"]`)?.value || null;
 	    const descripcion = fila.querySelector(`input[name="material-description-${i + 1}"]`)?.value?.trim() || null;
 	    const unidad = fila.querySelector(`input[name="material-unit-${i + 1}"]`)?.value?.trim() || null;
 	    const cantidadStr = fila.querySelector(`input[name="material-quantity-${i + 1}"]`)?.value;
-	    //const valor = fila.querySelector(`input[name="material-value-${i + 1}"]`)?.value?.trim() || null;
-	    const valor = null;
-	    
 	    const cantidad = isNaN(parseInt(cantidadStr)) ? null : parseInt(cantidadStr);
 
-	    const filaVacia = !descripcion && !unidad && cantidad === null && !valor;
+	    // Si la fila está eliminada, igual debemos enviarla con el flag en true
+	    if (estaEliminado) {
+	      materiales.push({
+	        idMaterial: idMaterial,
+	        descripcion: descripcion,
+	        unidad: unidad,
+	        cantidad: cantidad,
+	        valor: null,
+	        idOrdenTrabajo: idOrdenTrabajo,
+	        flagRegistroEliminado: true
+	      });
+	      continue;
+	    }
+
+	    // Omitir filas vacías no eliminadas
+	    const filaVacia = !descripcion && !unidad && cantidad === null;
 	    if (filaVacia) continue;
 
-	    const material = {
+	    // Fila válida activa
+	    materiales.push({
 	      idMaterial: idMaterial,
 	      descripcion: descripcion,
 	      unidad: unidad,
 	      cantidad: cantidad,
-	      valor: valor,
+	      valor: null,
 	      idOrdenTrabajo: idOrdenTrabajo,
 	      flagRegistroEliminado: false
-	    };
-
-	    materiales.push(material);
+	    });
 	  }
 
 	  return materiales;
-	}
+}
+
+function reordenarFilasMateriales() {
+	  const filas = document.querySelectorAll("#materialsTable tbody tr");
+	  let contador = 1;
+
+	  filas.forEach(fila => {
+	    if (fila.style.display === "none") return; // Omitir filas eliminadas (ocultas)
+
+	    // Actualizar número visible
+	    const celdaNumero = fila.querySelector("td:first-child");
+	    if (celdaNumero) {
+	      celdaNumero.textContent = contador;
+	    }
+
+	    // Actualizar atributos name
+	    fila.querySelectorAll("input").forEach(input => {
+	      if (input.name.startsWith("material-id-")) {
+	        input.name = `material-id-${contador}`;
+	      } else if (input.name.startsWith("material-description-")) {
+	        input.name = `material-description-${contador}`;
+	      } else if (input.name.startsWith("material-unit-")) {
+	        input.name = `material-unit-${contador}`;
+	      } else if (input.name.startsWith("material-quantity-")) {
+	        input.name = `material-quantity-${contador}`;
+	      }
+	    });
+
+	    contador++;
+	  });
+
+	  materialRowCount = contador - 1;
+}
+
+function reordenarFilasPersonal() {
+	  const filas = document.querySelectorAll("#personnelTable tbody tr");
+	  let contador = 1;
+
+	  filas.forEach(fila => {
+	    if (fila.style.display === "none") return;
+
+	    // Reasignar número visible
+	    const celdaNumero = fila.querySelector("td:first-child");
+	    if (celdaNumero) {
+	      celdaNumero.textContent = contador;
+	    }
+
+	    // Reasignar nombres de inputs
+	    fila.querySelectorAll("input").forEach(input => {
+	      if (input.name.startsWith("personal-id-")) {
+	        input.name = `personal-id-${contador}`;
+	      } else if (input.name.startsWith("personal-fecha-")) {
+	        input.name = `personal-fecha-${contador}`;
+	      } else if (input.name.startsWith("personal-nombre-")) {
+	        input.name = `personal-nombre-${contador}`;
+	      } else if (input.name.startsWith("personal-dias-")) {
+	        input.name = `personal-dias-${contador}`;
+	      } else if (input.name.startsWith("personal-horas-")) {
+	        input.name = `personal-horas-${contador}`;
+	      }
+	    });
+
+	    contador++;
+	  });
+
+	  personnelRowCount = contador - 1;
+}
 
 
 
@@ -243,6 +375,9 @@ function obtenerPersonalParticipa() {
 	  for (let i = 0; i < filas.length; i++) {
 	    const fila = filas[i];
 
+	    const eliminadoInput = fila.querySelector(`input[name^="personal-eliminado-"]`);
+	    const estaEliminado = eliminadoInput !== null;
+
 	    const id = fila.querySelector(`input[name="personal-id-${i + 1}"]`)?.value || null;
 	    const fecha = fila.querySelector(`input[name="personal-fecha-${i + 1}"]`)?.value || null;
 	    const nombre = fila.querySelector(`input[name="personal-nombre-${i + 1}"]`)?.value || null;
@@ -253,17 +388,19 @@ function obtenerPersonalParticipa() {
 	    const inputRadioTecnico = fila.querySelector('input[type="radio"][name="personal-tecnico"]');
 
 	    const trabajador = {
-	      idPersonalParticipa: id,
-	      fechaInicio: fecha,
-	      nombresCompletos: nombre,
-	      dias: isNaN(parseInt(dias)) ? null : parseInt(dias),
-	      horas: isNaN(parseInt(horas)) ? null : parseInt(horas),
-	      idOrdenTrabajo: idOrdenTrabajo,
-	      tipoDocumento: null,
-	      nroDocumento: null,
-	      flagRegistroEliminado: false,
-	      esResponsable: checkboxResponsable ? checkboxResponsable.checked : false
+	    	idPersonalParticipa: id,
+	    	fechaInicio: fecha,
+	    	nombresCompletos: nombre,
+	    	dias: isNaN(parseInt(dias)) ? null : parseInt(dias),
+	    	horas: isNaN(parseInt(horas)) ? null : parseInt(horas),
+	    	idOrdenTrabajo: idOrdenTrabajo,
+	    	tipoDocumento: null,
+	    	nroDocumento: null,
+	    	flagRegistroEliminado: estaEliminado,
+	    	esResponsable: checkboxResponsable ? checkboxResponsable.checked : false,
+	    	esTecnico: inputRadioTecnico ? inputRadioTecnico.checked : false
 	    };
+
 
 	    listaPersonal.push(trabajador);
 

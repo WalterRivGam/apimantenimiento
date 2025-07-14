@@ -42,12 +42,6 @@ public class PersonalParticipa {
 	@Column(name = "n_id_orden_trabajo")
 	private Integer idOrdenTrabajo;
 	
-	/*
-	@ManyToOne
-	@JoinColumn(name = "n_id_orden_trabajo")
-	private OrdenTrabajo ordenTrabajo;
-	*/
-	
 	@Column(name = "v_tipo_documento")
 	private String tipoDocumento;
 	
@@ -59,4 +53,7 @@ public class PersonalParticipa {
 	
 	@Column(name = "n_es_responsable")
 	private Boolean esResponsable;
+	
+	@Column(name = "n_es_tecnico")
+	private Boolean esTecnico;
 }
