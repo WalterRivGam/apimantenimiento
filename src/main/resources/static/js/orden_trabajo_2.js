@@ -229,12 +229,14 @@ document.getElementById('btn-enviar-orden-trabajo').addEventListener("click", as
 	    console.log("Respuesta del servidor:", resultado);
 
 	    $('#titulo-modal-generico').text("Orden de trabajo");
-		$('#mensaje-modal-generico').text("Orden actualizada: " + resultado.nroOrdenTrabajo);
-		$('#modal-generico').modal("show");
-		
-		const nombresCompletos = document.getElementById("nombresUsuario").value;
-		const nombresParam = encodeURIComponent(nombresCompletos);
-		window.location.href = `/mantenimiento/registrarorden?nombres=${nombresParam}`;
+	    $('#mensaje-modal-generico').text("Orden actualizada: " + resultado.nroOrdenTrabajo);
+	    $('#modal-generico').modal("show");
+
+	    $('#modal-generico').on('hidden.bs.modal', function () {
+	    	const nombresCompletos = document.getElementById("nombresUsuario").value;
+	    	const nombresParam = encodeURIComponent(nombresCompletos);
+	    	window.location.href = `/mantenimiento/registrarorden?nombres=${nombresParam}`;
+	    });
 		
 	  } catch (error) {
 	      console.error("Error en la petición:", error);
@@ -401,13 +403,16 @@ function obtenerPersonalParticipa() {
 	    	esTecnico: inputRadioTecnico ? inputRadioTecnico.checked : false
 	    };
 
+	    if(trabajador.nombresCompletos !== null) {
+	    	listaPersonal.push(trabajador);
+	    }
 
-	    listaPersonal.push(trabajador);
-
-	    if (inputRadioTecnico?.checked) {
+	    if (inputRadioTecnico?.checked && !estaEliminado) {
 	      tecnico = nombre;
 	    }
 	  }
+	  
+	  listaPersonal.filter((trabajador) => trabajador.nombresCompletos != null);
 
 	  return {
 	    listaPersonal,
